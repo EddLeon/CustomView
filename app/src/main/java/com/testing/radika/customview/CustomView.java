@@ -73,13 +73,24 @@ public class CustomView extends View {
         }
 
         // Construct a wedge-shaped path
-        sArrow.moveTo(0,-10);
+        /*sArrow.moveTo(0,-10);
         sArrow.lineTo(-20,60);
         sArrow.lineTo(0,60);
         sArrow.lineTo(-20,105);
         sArrow.lineTo(20,105);
         sArrow.lineTo(0,60);
         sArrow.lineTo(20,60);
+        sArrow.close();*/
+
+
+        //BUILDING THE INDICATOR
+        sArrow.moveTo(0,0);
+        sArrow.lineTo(45,-30);
+        sArrow.lineTo(45,0);
+        sArrow.lineTo(90,-30);
+        sArrow.lineTo(45,-60);
+        sArrow.lineTo(45,-30);
+        sArrow.lineTo(0,-60);
         sArrow.close();
     }
 
@@ -89,7 +100,7 @@ public class CustomView extends View {
         //draw the view
 
         Path auxArrow = new Path();
-
+        Path aux2Arrow = new Path();
         //get half of the width and height as we are working with a circle
         int viewWidthHalf = getWidth()/2;
         int viewHeightHalf = getHeight()/2;
@@ -102,7 +113,7 @@ public class CustomView extends View {
         else
             radius=viewWidthHalf-10;
 
-        circlePaint.setStyle(Paint.Style.FILL);
+        /*circlePaint.setStyle(Paint.Style.FILL);
         circlePaint.setAntiAlias(true);
 
         //set the paint color using the circle color specified
@@ -119,19 +130,24 @@ public class CustomView extends View {
 
         //draw the text using the string attribute and chosen properties
         // canvas.drawText(circleText, viewWidthHalf, viewHeightHalf, circlePaint);
+        */
 
+        float x,y;
+        x = (float) ((radius-90)*Math.cos(Math.toRadians(value))); //caclulate x, y coordinates of the perimeter of the circle
+        y = (float) ((radius-90)*Math.sin(Math.toRadians(value)));
         Matrix mat = new Matrix();
-        mat.setRotate(value+90, 0, 105);  //
+        mat.setRotate(value, 0, -10);  // rotate matrix taking the base of of the path as pivot
         sArrow.transform(mat, auxArrow);
-        mat.setTranslate(viewWidthHalf, viewHeightHalf);
+        sArrow.transform(mat, aux2Arrow);
+        mat.setTranslate(viewWidthHalf, viewHeightHalf);  //translation to center of canvas
         auxArrow.transform(mat);
-        mat.setTranslate((float) (radius*Math.cos(Math.toRadians(value))), (float) ( radius*Math.sin(Math.toRadians(value))));
+        aux2Arrow.transform(mat);
+        mat.setTranslate(x, y);
         auxArrow.transform(mat);
-
+        mat.setTranslate(-x, -y);
+        aux2Arrow.transform(mat);
         canvas.drawPath(auxArrow, mPaint);
-
-        Log.d("MAT: ", mat.toString());
-
+        canvas.drawPath(aux2Arrow, mPaint);
     }
 
     public int getCircleColor(){
